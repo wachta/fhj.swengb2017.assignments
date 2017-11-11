@@ -66,7 +66,7 @@ object FunctionalAssignment {
     * @param numbers
     * @return
     */
-  def sum(numbers: Seq[Int]): Int = op(numbers,0)( (x: Int, y: Int) => x +y)
+  def sum(numbers: Seq[Int]): Int = op(numbers,0)( (x: Int, y: Int) => x + y)
 
   /**
     * calculate the factorial number of the given parameter.
@@ -130,7 +130,7 @@ object FunctionalAssignment {
   def genPairs[A, B](as: Seq[A], bs: Seq[B]): Seq[(A, B)] = as.zip(bs)
 
   // a simple definition of a linked list, we define our own list data structure
-  sealed trait MyList[+A]
+  sealed trait MyList[+A]  /* +A means that List can add all types of classes from a type. In our example Int */
 
   case object MyNil extends MyList[Nothing]
 
@@ -140,20 +140,18 @@ object FunctionalAssignment {
   // it also provides a convenience constructor in order to instantiate a MyList without hassle
   object MyList {
 
-    def sum[Int](list: MyList[Int]): Int = ???
-    /*
-    {
-      def sumRec(list: MyList[Int], result: Int): Int = list match {
-          case MyNil => result /*Empty, we're done */
-          case h :: t => sumRec(t, (result + h))
-      }
-
-      sumRec(list, 0)
+    def sum[Int] (list: MyList[Int]): Int = list match {
+      case MyNil => 0 /*Empty List*/
+      case Cons(h,t) => h + sum(t) /*Default case: calc sum with recursive call*/
     }
-    */
 
-    def product[Int](list: MyList[Int]): Int = ???
+    def product[Int](list: MyList[Int]): Int = list match {
+      case MyNil => 1 /*Emtpy List - or end of list reached */
+      case Cons(0,_) => 0 /* Oh we've to deal with a 0 -> stop recursion we can predict the result already */
+      case Cons(h,t) => h * (product(t)) /*Default case: calc product - When recursion reaches end, it get multiplied with 1 */
+    }
 
+    /*That's simple the constructor for MyList */
     def apply[A](as: A*): MyList[A] = {
       as match {
         case Nil => MyNil
