@@ -140,16 +140,22 @@ object FunctionalAssignment {
   // it also provides a convenience constructor in order to instantiate a MyList without hassle
   object MyList {
 
+    def sum[Int] (list: MyList[Int]): Int = ???
+    /* TODO --> WTF INT not INT?
     def sum[Int] (list: MyList[Int]): Int = list match {
       case MyNil => 0 /*Empty List*/
       case Cons(h,t) => h + sum(t) /*Default case: calc sum with recursive call*/
     }
+    */
 
+    def product[Int](list: MyList[Int]): Int = ???
+    /* TODO --> WTF INT not INT?
     def product[Int](list: MyList[Int]): Int = list match {
       case MyNil => 1 /*Emtpy List - or end of list reached */
-      case Cons(0,_) => 0 /* Oh we've to deal with a 0 -> stop recursion we can predict the result already */
-      case Cons(h,t) => h * (product(t)) /*Default case: calc product - When recursion reaches end, it get multiplied with 1 */
+      case Cons(h,t) => if(h==0) 0 else h * (product(t))  /* Chekc if we have to deal with a 0-Head In that case we can stop recursion and have the result already */
+                                                          /*Default case: calc product - When recursion reaches end, it get multiplied with 1 */
     }
+    */
 
     /*That's simple the constructor for MyList */
     def apply[A](as: A*): MyList[A] = {
