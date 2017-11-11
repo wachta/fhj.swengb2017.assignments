@@ -9,12 +9,12 @@ object FunctionalAssignment {
   /**
     * A function which returns its parameters in a changed order. Look at the type signature.
     */
-  def flip[A, B](t: (A, B)): (B, A) = ???
+  def flip[A, B](t: (A, B)): (B, A) = t.swap
 
   /**
     * given a Seq[A] and a function f : A => B, return a Seq[B]
     */
-  def unknown[A, B](as: Seq[A], fn: A => B): Seq[B] = ???
+  def unknown[A, B](as: Seq[A], fn: A => B): Seq[B] = as.map(fn)
 
   /**
     * Returns the absolute value of the parameter i.
@@ -22,7 +22,7 @@ object FunctionalAssignment {
     * @param i a value, either with a positive or a negative sign.
     * @return
     */
-  def abs(i: Int): Int = ???
+  def abs(i: Int): Int = if (i >= 0) i else (-1 * i)
 
 
   // Describe with your own words what this function does.
