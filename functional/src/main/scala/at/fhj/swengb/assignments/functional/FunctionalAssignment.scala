@@ -33,15 +33,31 @@ object FunctionalAssignment {
   // What did you gain with your new names? What did you loose?
   //
   /**
+    * Function uses foldl of list which means:
+    *   From left to right op iteratates through list of elements and applies a function 'func' on it.
+    *   This function  produces a result wich is the start value of the next iteration path.
+    *   At the end the produces result is returned.
     *
-    * @param as
-    * @param b
-    * @param fn
-    * @tparam A
-    * @tparam B
-    * @return
+    *   Parameters of op:
+    *       -> list   => List of alements
+    *       -> acc    => Start value of accumulator
+    *       -> func   => Function which takes an element from list and accumulator and produces a result.
+    *                    This result is returned and stored as new accumulator for next iteration run
+    *
+    * @param list     => List with elements of 'oldVal'. This elements get changed by function func to 'new' which is
+    *                    the same type as acc.
+    * @param acc      => Accumulator for foldl. Start value for fist run
+    * @param func     => Function which gets get current element of list and accumulator. This function get applied to
+    *                    element of list and produces a new accumulator
+    * @tparam listVal => Type of list elements
+    * @tparam accVal  => Type of accumulator. Defines expected return type of function 'func' wich is the new
+    *                    accumultor for the next run (or final return value if iteration is done)
+    * @return         => Function return type of accVal
+    *
+    * Gained with new naming convention:
+    *   --> Easier reading because of meaningfull parameter names (except as => list)
     */
-  def op[A, B](as: Seq[A], b: B)(fn: (B, A) => B): B = as.foldLeft(b)(fn)
+  def op[listVal, accVal](list: Seq[listVal], acc: accVal)(func: (accVal, listVal) => accVal): accVal = list.foldLeft(acc)(func)
 
   /**
     * implement the summation of the given numbers parameter.
@@ -50,8 +66,7 @@ object FunctionalAssignment {
     * @param numbers
     * @return
     */
-  def sum(numbers: Seq[Int]): Int = ???
-
+  def sum(numbers: Seq[Int]): Int = op(numbers,0)( (x: Int, y: Int) => x +y)
 
   /**
     * calculate the factorial number of the given parameter.
@@ -63,7 +78,7 @@ object FunctionalAssignment {
     * @param i parameter for which the factorial must be calculated
     * @return i!
     */
-  def fact(i: Int): Int = ???
+  def fact(i: Int): Int = if (i == 0) 1 else  (fact(i-1) * i )
 
   /**
     * compute the n'th fibonacci number
@@ -73,7 +88,11 @@ object FunctionalAssignment {
     *
     * https://en.wikipedia.org/wiki/Fibonacci_number
     */
-  def fib(n: Int): Int = ???
+  def fib(n: Int): Int = n match {
+    case n if (n <= 0) => 0
+    case n if (n <= 2) => 1
+    case _ => fib(n-1) + fib(n-2)
+  }
 
   /**
     * Implement a isSorted which checks whether an Array[A] is sorted according to a
@@ -82,7 +101,25 @@ object FunctionalAssignment {
     * Implementation hint: you always have to compare two consecutive elements of the array.
     * Elements which are equal are considered to be ordered.
     */
-  def isSorted[A](as: Array[A], gt: (A, A) => Boolean): Boolean = ???
+  def isSorted[A](as: Array[A], gt: (A, A) => Boolean): Boolean = {
+    if( as.length < 2)
+      /*List to small to check: list with 0 or 1 element is definetly sorted */
+      true
+    else {
+      /*Ok, we have to deal with a longer list -> check for sorting */
+      def sortIter(i: Int): Boolean = {
+        if (i >= as.length -1)
+          /*Looped over all items found nothing weired -> all elements sorted we're done*/
+          true
+        else
+          if (gt(as(i),as(i+1)))
+            sortIter(i+1) /*Looks good, check next... */
+          else
+            false /*Ha- There it is! => unsorted elements found! */
+      }
+      sortIter(0)
+    }
+  }
 
   /**
     * Takes both lists and combines them, element per element.
@@ -90,7 +127,7 @@ object FunctionalAssignment {
     * If one sequence is shorter than the other one, the function stops at the last element
     * of the shorter sequence.
     */
-  def genPairs[A, B](as: Seq[A], bs: Seq[B]): Seq[(A, B)] = ???
+  def genPairs[A, B](as: Seq[A], bs: Seq[B]): Seq[(A, B)] = as.zip(bs)
 
   // a simple definition of a linked list, we define our own list data structure
   sealed trait MyList[+A]
@@ -104,6 +141,16 @@ object FunctionalAssignment {
   object MyList {
 
     def sum[Int](list: MyList[Int]): Int = ???
+    /*
+    {
+      def sumRec(list: MyList[Int], result: Int): Int = list match {
+          case MyNil => result /*Empty, we're done */
+          case h :: t => sumRec(t, (result + h))
+      }
+
+      sumRec(list, 0)
+    }
+    */
 
     def product[Int](list: MyList[Int]): Int = ???
 
