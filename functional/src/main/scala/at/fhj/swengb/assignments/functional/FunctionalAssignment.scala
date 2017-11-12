@@ -140,22 +140,20 @@ object FunctionalAssignment {
   // it also provides a convenience constructor in order to instantiate a MyList without hassle
   object MyList {
 
-    def sum[Int] (list: MyList[Int]): Int = ???
-    /* TODO --> WTF INT not INT?
-    def sum[Int] (list: MyList[Int]): Int = list match {
-      case MyNil => 0 /*Empty List*/
-      case Cons(h,t) => h + sum(t) /*Default case: calc sum with recursive call*/
+    /* Error in Definition? https://stackoverflow.com/questions/27142402/found-scala-int0-required-int-0 */
+    //def sum[Int] (list: MyList[Int]): Int = ???
+    def sum(list: MyList[Int]): Int = list match {
+      case MyNil => 0 /*Empty List - we're done*/
+      case Cons(h,t) => h + sum(t) /*Still elements in List. Add h to sum and repead with tail*/
     }
-    */
 
-    def product[Int](list: MyList[Int]): Int = ???
-    /* TODO --> WTF INT not INT?
-    def product[Int](list: MyList[Int]): Int = list match {
-      case MyNil => 1 /*Emtpy List - or end of list reached */
+    /* Error in Definition? https://stackoverflow.com/questions/27142402/found-scala-int0-required-int-0 */
+    //def product[Int](list: MyList[Int]): Int = ???
+    def product(list: MyList[Int]): scala.Int = list match {
+      case MyNil => 1/*Emtpy List - or end of list reached */
       case Cons(h,t) => if(h==0) 0 else h * (product(t))  /* Chekc if we have to deal with a 0-Head In that case we can stop recursion and have the result already */
                                                           /*Default case: calc product - When recursion reaches end, it get multiplied with 1 */
     }
-    */
 
     /*That's simple the constructor for MyList */
     def apply[A](as: A*): MyList[A] = {
