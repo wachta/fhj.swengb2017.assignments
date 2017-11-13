@@ -22,7 +22,7 @@ object FunctionalAssignment {
     * @param i a value, either with a positive or a negative sign.
     * @return
     */
-  def abs(i: Int): Int = if (i >= 0) i else (-1 * i)
+  def abs(i: Int): Int = if (i >= 0) i else -1 * i
 
 
   // Describe with your own words what this function does.
@@ -63,7 +63,7 @@ object FunctionalAssignment {
     * implement the summation of the given numbers parameter.
     * Use the function 'op' defined above.
     *
-    * @param numbers
+    * @param numbers -> List of numbers which get summarized
     * @return
     */
   def sum(numbers: Seq[Int]): Int = op(numbers,0)( (x: Int, y: Int) => x + y)
@@ -78,7 +78,7 @@ object FunctionalAssignment {
     * @param i parameter for which the factorial must be calculated
     * @return i!
     */
-  def fact(i: Int): Int = if (i == 0) 1 else  (fact(i-1) * i )
+  def fact(i: Int): Int = if (i == 0) 1 else  fact(i-1) * i
 
   /**
     * compute the n'th fibonacci number
@@ -89,8 +89,8 @@ object FunctionalAssignment {
     * https://en.wikipedia.org/wiki/Fibonacci_number
     */
   def fib(n: Int): Int = n match {
-    case n if (n <= 0) => 0
-    case n if (n <= 2) => 1
+    case n if n <= 0 => 0
+    case n if n <= 2 => 1
     case _ => fib(n-1) + fib(n-2)
   }
 
@@ -147,11 +147,10 @@ object FunctionalAssignment {
     }
 
     /* Error in Definition? https://stackoverflow.com/questions/27142402/found-scala-int0-required-int-0 */
-    //def product[Int](list: MyList[Int]): Int = ???
     def product(list: MyList[Int]): Int = list match {
       case MyNil => 1/*Emtpy List - or end of list reached */
-      case Cons(h,t) => if(h==0) 0 else h * (product(t))  /* Check if we have to deal with a 0-Head In that case we can stop recursion and have the result already */
-                                                          /*Default case: calc product - When recursion reaches end, it get multiplied with 1 */
+      case Cons(h,t) => if(h==0) 0 else h * product(t)  /* Check if we have to deal with a 0-Head In that case we can stop recursion and have the result already */
+                                                        /*Default case: calc product - When recursion reaches end, it get multiplied with 1 */
     }
 
     /*That's simple the constructor for MyList */
