@@ -16,8 +16,6 @@ object FunctionalAssignment {
   }
 
 
-
-
   /**
     * given a Seq[A] and a function f : A => B, return a Seq[B]
     */
@@ -26,8 +24,6 @@ object FunctionalAssignment {
     as.map(fn)
 
   }
-
-
 
 
   /**
@@ -39,14 +35,11 @@ object FunctionalAssignment {
   def abs(i: Int): Int = {
 
     //i.abs
-    if (i < 0) i * -1
+    if (i < 0)
+      i * -1
     else i
 
   }
-
-
-
-
 
 
   // Describe with your own words what this function does.
@@ -68,12 +61,6 @@ object FunctionalAssignment {
   def op[A, B](as: Seq[A], b: B)(fn: (B, A) => B): B = as.foldLeft(b)(fn)
 
 
-
-
-
-
-
-
   /**
     * implement the summation of the given numbers parameter.
     * Use the function 'op' defined above.
@@ -84,7 +71,7 @@ object FunctionalAssignment {
   def sum(numbers: Seq[Int]): Int = {
 
     numbers.foldLeft(0)(_ + _) //numbers.sum
-
+    //op(numbers,0)(_+_)
 
   }
 
@@ -106,9 +93,6 @@ object FunctionalAssignment {
   }
 
 
-
-
-
   /**
     * compute the n'th fibonacci number
     *
@@ -118,15 +102,14 @@ object FunctionalAssignment {
     * https://en.wikipedia.org/wiki/Fibonacci_number
     */
 
-  def fib( n : Int) : Int = {
-      def fib_tail( n: Int, a:Int, b:Int): Int = n match {
-        case 0 => a
-        case _ => fib_tail( n-1, b, a+b )
+  def fib(n: Int): Int = {
+    def fib_tail(n: Int, a: Int, b: Int): Int = n match {
+      case 0 => a
+      case _ => fib_tail(n - 1, b, a + b)
     }
-    return fib_tail( n, 0, 1)
+
+    return fib_tail(n, 0, 1)
   }
-
-
 
 
   /**
@@ -136,14 +119,14 @@ object FunctionalAssignment {
     * Implementation hint: you always have to compare two consecutive elements of the array.
     * Elements which are equal are considered to be ordered.
     */
-  
-  def isSorted[A](as: Array[A], gt: (A,A) => Boolean): Boolean = {
-    def go(n: Int): Boolean =
-      if (n <= as.length-1) true
-      else if (gt(as(n), as(n+1))) false
-      else go(n+1)
 
-     go(0)
+  def isSorted[A](as: Array[A], gt: (A, A) => Boolean): Boolean = {
+    def go(n: Int): Boolean =
+      if (n <= as.length - 1) true
+      else if (gt(as(n), as(n + 1))) false
+      else go(n + 1)
+
+    go(0)
   }
 
 
@@ -160,7 +143,6 @@ object FunctionalAssignment {
   }
 
 
-
   // a simple definition of a linked list, we define our own list data structure
   sealed trait MyList[+A]
 
@@ -172,40 +154,21 @@ object FunctionalAssignment {
   // it also provides a convenience constructor in order to instantiate a MyList without hassle
   object MyList {
 
-    def sum[Int](list: MyList[Int]): Int = ??? //{
-      //list match {
-        //case Nil => MyNil
-        //case Cons(head,tail) => head + sum(tail)
-    //  }
-    //}
+    def sum(list: MyList[Int]): Int = list match {
+      case MyNil => 0
+      case Cons(head, tail) => head + sum(tail)
+    }
 
-
-
-        // Cons(head + sum(tail))
-    //  }}
-
-     // }
-    //}
-        //list match {
-        //case Nil => 0
-        //case Cons(x,xs) => x + sum(xs)}
-
-      def product[Int](list: MyList[Int]): Int = ???
-        //ds match {
-        //case Nil => 1.0
-        //case Cons(0.0, _) => 0.0
-        //case Cons(x,xs) => x * product(xs)
-
-
+    def product(list: MyList[Int]): Int = list match {
+      case MyNil => 1
+      case Cons(0,_) => 0
+      case Cons(head,tail) => head * product(tail)
+    }
 
     def apply[A](as: A*): MyList[A] = {
-      as match {
-        case Nil => MyNil
-        case h :: tl => Cons(h, apply(tl: _*))
-      }
+      if (as.isEmpty) MyNil
+      else Cons(as.head, apply(as.tail: _*))
     }
 
   }
-
 }
-
