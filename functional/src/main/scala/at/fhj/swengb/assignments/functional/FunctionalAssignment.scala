@@ -9,7 +9,7 @@ object FunctionalAssignment {
   /**
     * A function which returns its parameters in a changed order. Look at the type signature.
     */
-  def flip[A, B](t: (A, B)): (B, A) = t.swap
+  def flip[A, B](t: (A, B)): (B, A) = (t._2,t._1)
 
   /**
     * given a Seq[A] and a function f : A => B, return a Seq[B]
