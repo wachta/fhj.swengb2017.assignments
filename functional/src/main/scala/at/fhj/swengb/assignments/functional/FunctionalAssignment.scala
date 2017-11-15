@@ -89,8 +89,8 @@ object FunctionalAssignment {
     * https://en.wikipedia.org/wiki/Fibonacci_number
     */
   def fib(n: Int): Int = n match {
-    case n if n <= 0 => 0
-    case n if n <= 2 => 1
+    case `n` if n <= 0 => 0
+    case `n` if n <= 2 => 1
     case _ => fib(n - 1) + fib(n - 2)
   }
 
