@@ -9,7 +9,7 @@ object FunctionalAssignment {
   /**
     * A function which returns its parameters in a changed order. Look at the type signature.
     */
-  def flip[A, B](t: (A, B)): (B, A) = (t._2,t._1)
+  def flip[A, B](t: (A, B)): (B, A) = (t._2, t._1)
 
   /**
     * given a Seq[A] and a function f : A => B, return a Seq[B]
@@ -24,7 +24,6 @@ object FunctionalAssignment {
     */
   def abs(i: Int): Int = if (i >= 0) i else -1 * i
 
-
   // Describe with your own words what this function does.
   // in the comment below, add a description what this function does - in your own words - and give
   // the parameters more descriptive names.
@@ -34,30 +33,31 @@ object FunctionalAssignment {
   //
   /**
     * Function uses foldl of list which means:
-    *   From left to right op iteratates through list of elements and applies a function 'func' on it.
-    *   This function  produces a result wich is the start value of the next iteration path.
-    *   At the end the produces result is returned.
+    * From left to right op iteratates through list of elements and applies a function 'func' on it.
+    * This function  produces a result wich is the start value of the next iteration path.
+    * At the end the produces result is returned.
     *
-    *   Parameters of op:
-    *       -> list   => List of alements
-    *       -> acc    => Start value of accumulator
-    *       -> func   => Function which takes an element from list and accumulator and produces a result.
-    *                    This result is returned and stored as new accumulator for next iteration run
+    * Parameters of op:
+    * -> list   => List of alements
+    * -> acc    => Start value of accumulator
+    * -> func   => Function which takes an element from list and accumulator and produces a result.
+    * This result is returned and stored as new accumulator for next iteration run
     *
-    * @param list     => List with elements of 'oldVal'. This elements get changed by function func to 'new' which is
-    *                    the same type as acc.
-    * @param acc      => Accumulator for foldl. Start value for fist run
-    * @param func     => Function which gets get current element of list and accumulator. This function get applied to
-    *                    element of list and produces a new accumulator
+    * @param list => List with elements of 'oldVal'. This elements get changed by function func to 'new' which is
+    *             the same type as acc.
+    * @param acc  => Accumulator for foldl. Start value for fist run
+    * @param func => Function which gets get current element of list and accumulator. This function get applied to
+    *             element of list and produces a new accumulator
     * @tparam listVal => Type of list elements
     * @tparam accVal  => Type of accumulator. Defines expected return type of function 'func' wich is the new
-    *                    accumultor for the next run (or final return value if iteration is done)
-    * @return         => Function return type of accVal
+    *                 accumultor for the next run (or final return value if iteration is done)
+    * @return => Function return type of accVal
     *
-    * Gained with new naming convention:
-    *   --> Easier reading because of meaningfull parameter names (except as => list)
+    *         Gained with new naming convention:
+    *         --> Easier reading because of meaningfull parameter names (except as => list)
     */
-  def op[listVal, accVal](list: Seq[listVal], acc: accVal)(func: (accVal, listVal) => accVal): accVal = list.foldLeft(acc)(func)
+  def op[listVal, accVal](list: Seq[listVal], acc: accVal)(
+    func: (accVal, listVal) => accVal): accVal = list.foldLeft(acc)(func)
 
   /**
     * implement the summation of the given numbers parameter.
@@ -66,7 +66,7 @@ object FunctionalAssignment {
     * @param numbers -> List of numbers which get summarized
     * @return
     */
-  def sum(numbers: Seq[Int]): Int = op(numbers,0)( (x: Int, y: Int) => x + y)
+  def sum(numbers: Seq[Int]): Int = op(numbers, 0)((x: Int, y: Int) => x + y)
 
   /**
     * calculate the factorial number of the given parameter.
@@ -78,7 +78,7 @@ object FunctionalAssignment {
     * @param i parameter for which the factorial must be calculated
     * @return i!
     */
-  def fact(i: Int): Int = if (i == 0) 1 else  fact(i-1) * i
+  def fact(i: Int): Int = if (i == 0) 1 else fact(i - 1) * i
 
   /**
     * compute the n'th fibonacci number
@@ -91,7 +91,7 @@ object FunctionalAssignment {
   def fib(n: Int): Int = n match {
     case n if n <= 0 => 0
     case n if n <= 2 => 1
-    case _ => fib(n-1) + fib(n-2)
+    case _ => fib(n - 1) + fib(n - 2)
   }
 
   /**
@@ -102,21 +102,21 @@ object FunctionalAssignment {
     * Elements which are equal are considered to be ordered.
     */
   def isSorted[A](as: Array[A], gt: (A, A) => Boolean): Boolean = {
-    if( as.length < 2)
-      /*List to small to check: list with 0 or 1 element is definetly sorted */
+    if (as.length < 2)
+    /*List to small to check: list with 0 or 1 element is definetly sorted */
       true
     else {
       /*Ok, we have to deal with a longer list -> check for sorting */
       def sortIter(i: Int): Boolean = {
-        if (i >= as.length -1)
-          /*Looped over all items found nothing weired -> all elements sorted we're done*/
+        if (i >= as.length - 1)
+        /*Looped over all items found nothing weired -> all elements sorted we're done*/
           true
+        else if (gt(as(i), as(i + 1)))
+          sortIter(i + 1) /*Looks good, check next... */
         else
-          if (gt(as(i),as(i+1)))
-            sortIter(i+1) /*Looks good, check next... */
-          else
-            false /*Ha- There it is! => unsorted elements found! */
+          false /*Ha- There it is! => unsorted elements found! */
       }
+
       sortIter(0)
     }
   }
@@ -130,7 +130,9 @@ object FunctionalAssignment {
   def genPairs[A, B](as: Seq[A], bs: Seq[B]): Seq[(A, B)] = as.zip(bs)
 
   // a simple definition of a linked list, we define our own list data structure
-  sealed trait MyList[+A]  /* +A means that List can add all types of classes from a type. In our example Int */
+  sealed trait MyList[+A]
+
+  /* +A means that List can add all types of classes from a type. In our example Int */
 
   case object MyNil extends MyList[Nothing]
 
@@ -143,14 +145,14 @@ object FunctionalAssignment {
     /* Error in Definition? https://stackoverflow.com/questions/27142402/found-scala-int0-required-int-0 */
     def sum(list: MyList[Int]): Int = list match {
       case MyNil => 0 /*Empty List - we're done*/
-      case Cons(h,t) => h + sum(t) /*Still elements in List. Add h to sum and repead with tail*/
+      case Cons(h, t) => h + sum(t) /*Still elements in List. Add h to sum and repead with tail*/
     }
 
     /* Error in Definition? https://stackoverflow.com/questions/27142402/found-scala-int0-required-int-0 */
     def product(list: MyList[Int]): Int = list match {
-      case MyNil => 1/*Emtpy List - or end of list reached */
-      case Cons(h,t) => if(h==0) 0 else h * product(t)  /* Check if we have to deal with a 0-Head In that case we can stop recursion and have the result already */
-                                                        /*Default case: calc product - When recursion reaches end, it get multiplied with 1 */
+      case MyNil => 1 /*Emtpy List - or end of list reached */
+      case Cons(h, t) => if (h == 0) 0 else h * product(t) /* Check if we have to deal with a 0-Head In that case we can stop recursion and have the result already */
+      /*Default case: calc product - When recursion reaches end, it get multiplied with 1 */
     }
 
     /*That's simple the constructor for MyList */
@@ -162,4 +164,3 @@ object FunctionalAssignment {
   }
 
 }
-
