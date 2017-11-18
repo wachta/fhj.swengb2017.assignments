@@ -2,6 +2,8 @@ package at.fhj.swengb.assignments.tree
 
 import javafx.scene.paint.Color
 
+import at.fhj.swengb.assignments.tree.Graph.colorMap
+
 import scala.math.BigDecimal.RoundingMode
 import scala.util.Random
 
@@ -61,7 +63,7 @@ object Graph {
               treeDepth: Int,
               factor: Double = 0.75,
               angle: Double = 45.0,
-              colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = ???
+              colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = Node(L2D(start,initialAngle,length,colorMap.get(0).get))
 
 }
 
