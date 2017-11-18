@@ -2,9 +2,6 @@ package at.fhj.swengb.assignments.tree
 
 import javafx.scene.paint.Color
 
-import at.fhj.swengb.assignments.tree.Graph.colorMap
-
-import scala.math.BigDecimal.RoundingMode
 import scala.util.Random
 
 object Graph {
@@ -41,7 +38,26 @@ object Graph {
     * @param convert a converter function
     * @return
     */
-  def traverse[A, B](tree: Tree[A])(convert: A => B): Seq[B] =  ???
+  def traverse[A, B](tree: Tree[A])(convert: A => B): Seq[B] =  {
+   val myList = List()
+
+   //Helper to add all elements to list
+   def addElemToList(elem: Tree[A], list: Seq[A]): Seq[A] = {
+     elem match {
+       case  Node(x) => x :: myList
+       case Branch(left,right) =>  addElemToList(left,addElemToList(right,myList))
+     }
+   }
+
+    //Add all nodes to list
+   for ( c <- List(tree)) {
+     addElemToList(c,myList)
+   }
+
+    //Map operation on list and return result
+    myList.map(convert)
+
+  }
 
 
   /**
@@ -63,8 +79,62 @@ object Graph {
               treeDepth: Int,
               factor: Double = 0.75,
               angle: Double = 45.0,
-              colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = Node(L2D(start,initialAngle,length,colorMap.get(0).get))
+              colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = {
 
+    //Allow just a depth of 2 elements
+    require( treeDepth <= 2)
+
+    //Create root of all evil
+    val rootNode: Tree[L2D] = Node(L2D(start,initialAngle,length,colorMap(0)))
+
+    //Create Tree according depth
+    treeDepth match {
+      case 0 => rootNode
+
+      case 1 => {
+        //Startpoint and color for 1st level nodes
+        val fstLvlStart: Pt2D = rootNode.asInstanceOf[Node[L2D]].value.end
+        val fstLvlColor :Color = colorMap(0)
+
+        //Create nodes on first level
+        val leftFstLvlNode: Tree [L2D] = Node(L2D(fstLvlStart,angle * -1,length,fstLvlColor))
+        val rightFstLvlNode: Tree [L2D] = Node(L2D(fstLvlStart,angle,length,fstLvlColor))
+
+        //Return complete tree
+        Branch(rootNode,Branch(leftFstLvlNode,rightFstLvlNode))
+      }
+
+      case 2 => {
+        //Create nodes on first level
+        val fstLvlStart: Pt2D = rootNode.asInstanceOf[Node[L2D]].value.end
+        val fstLvlColor :Color = colorMap(0)
+        val leftFstLvlNode: Tree [L2D] = Node(L2D(fstLvlStart,angle * -1,length,fstLvlColor))
+        val rightFstLvlNode: Tree [L2D] = Node(L2D(fstLvlStart,angle,length,fstLvlColor))
+
+        //Startpoint and color for 2nd level nodes
+        val leftSndLvlStart: Pt2D =  leftFstLvlNode.asInstanceOf[Node[L2D]].value.end
+        val rightSndLvlStart: Pt2D =  leftFstLvlNode.asInstanceOf[Node[L2D]].value.end
+        val sndLvlColor :Color = colorMap(1)
+
+        //Create nodes on second level
+        val leftSndLvlNode1: Tree [L2D] = Node(L2D(leftSndLvlStart,angle * -1,length,sndLvlColor))
+        val leftSndLvlNode2: Tree [L2D] = Node(L2D(leftSndLvlStart,angle * -1,length,sndLvlColor))
+
+        val rightSndLvlNode1: Tree [L2D] = Node(L2D(rightSndLvlStart,angle,length,sndLvlColor))
+        val rightSndLvlNode2: Tree [L2D] = Node(L2D(rightSndLvlStart,angle,length,sndLvlColor))
+
+        //Build subtrees
+        val leftSubtree: Tree [L2D] = Branch(leftFstLvlNode,Branch(leftSndLvlNode1,leftSndLvlNode2))
+        val rightSubtree = Branch(rightFstLvlNode,Branch(rightSndLvlNode1,rightSndLvlNode2))
+
+        //Return complete tree
+        Branch(rootNode,Branch(leftSubtree,rightSubtree))
+      }
+
+    }
+
+
+   }
 }
 
 
