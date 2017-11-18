@@ -113,7 +113,7 @@ object Graph {
 
         //Startpoint and color for 2nd level nodes
         val leftSndLvlStart: Pt2D =  leftFstLvlNode.asInstanceOf[Node[L2D]].value.end
-        val rightSndLvlStart: Pt2D =  leftFstLvlNode.asInstanceOf[Node[L2D]].value.end
+        val rightSndLvlStart: Pt2D =  rightFstLvlNode.asInstanceOf[Node[L2D]].value.end
         val sndLvlColor :Color = colorMap(1)
 
         //Create nodes on second level
