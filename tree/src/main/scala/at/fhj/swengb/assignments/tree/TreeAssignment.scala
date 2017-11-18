@@ -49,14 +49,13 @@ object Graph {
      }
    }
 
-    //Add all nodes to list
+   //Add all nodes to list
    for ( c <- List(tree)) {
      addElemToList(c,myList)
    }
 
     //Map operation on list and return result
     myList.map(convert)
-
   }
 
 
@@ -93,39 +92,44 @@ object Graph {
 
       case 1 => {
         //Startpoint and color for 1st level nodes
-        val fstLvlStart: Pt2D = rootNode.asInstanceOf[Node[L2D]].value.end
+        val rootL2D: L2D = rootNode.asInstanceOf[Node[L2D]].value
         val fstLvlColor :Color = colorMap(0)
 
         //Create nodes on first level
-        val leftFstLvlNode: Tree [L2D] = Node(L2D(fstLvlStart,angle * -1,length,fstLvlColor))
-        val rightFstLvlNode: Tree [L2D] = Node(L2D(fstLvlStart,angle,length,fstLvlColor))
+        val leftFstLvlNode: Tree [L2D] = Node(rootL2D.left(factor,angle,fstLvlColor))
+        val rightFstLvlNode: Tree [L2D] = Node(rootL2D.right(factor,angle,fstLvlColor))
 
         //Return complete tree
         Branch(rootNode,Branch(leftFstLvlNode,rightFstLvlNode))
       }
 
       case 2 => {
-        //Create nodes on first level
-        val fstLvlStart: Pt2D = rootNode.asInstanceOf[Node[L2D]].value.end
+        //Startpoint and color for 1st level nodes
+        val rootL2D: L2D = rootNode.asInstanceOf[Node[L2D]].value
         val fstLvlColor :Color = colorMap(0)
-        val leftFstLvlNode: Tree [L2D] = Node(L2D(fstLvlStart,angle * -1,length,fstLvlColor))
-        val rightFstLvlNode: Tree [L2D] = Node(L2D(fstLvlStart,angle,length,fstLvlColor))
 
-        //Startpoint and color for 2nd level nodes
-        val leftSndLvlStart: Pt2D =  leftFstLvlNode.asInstanceOf[Node[L2D]].value.end
-        val rightSndLvlStart: Pt2D =  rightFstLvlNode.asInstanceOf[Node[L2D]].value.end
+        //Create nodes on first level
+        val leftFstLvlNode: Tree [L2D] = Node(rootL2D.left(factor,angle,fstLvlColor))
+        val rightFstLvlNode: Tree [L2D] = Node(rootL2D.right(factor,angle,fstLvlColor))
+
+        //Startpoint and color for 1st level nodes
+        val fstLeftL2D: L2D = leftFstLvlNode.asInstanceOf[Node[L2D]].value
+        val fstRightL2D: L2D = leftFstLvlNode.asInstanceOf[Node[L2D]].value
         val sndLvlColor :Color = colorMap(1)
 
-        //Create nodes on second level
-        val leftSndLvlNode1: Tree [L2D] = Node(L2D(leftSndLvlStart,angle * -1,length,sndLvlColor))
-        val leftSndLvlNode2: Tree [L2D] = Node(L2D(leftSndLvlStart,angle * -1,length,sndLvlColor))
+        //Create nodes on snd level
+        val leftSndLvlNode1: Tree [L2D] = Node(fstLeftL2D.left(factor,angle,sndLvlColor))
+        val leftSndLvlNode2: Tree [L2D] = Node(fstLeftL2D.right(factor,angle,sndLvlColor))
 
-        val rightSndLvlNode1: Tree [L2D] = Node(L2D(rightSndLvlStart,angle,length,sndLvlColor))
-        val rightSndLvlNode2: Tree [L2D] = Node(L2D(rightSndLvlStart,angle,length,sndLvlColor))
+
+        //Irgendwo ist hier ein Zahlendreher drin. right und left sind auf jeden fall Vertauscht
+        val rightSndLvlNode1: Tree [L2D] = Node(fstRightL2D.right(factor,angle,sndLvlColor))
+        val rightSndLvlNode2: Tree [L2D] = Node(fstRightL2D.left(factor,angle,sndLvlColor))
 
         //Build subtrees
-        val leftSubtree: Tree [L2D] = Branch(leftFstLvlNode,Branch(leftSndLvlNode1,leftSndLvlNode2))
-        val rightSubtree = Branch(rightFstLvlNode,Branch(rightSndLvlNode1,rightSndLvlNode2))
+        val leftSubtree: Tree [L2D]  = Branch(leftFstLvlNode,Branch(leftSndLvlNode1,leftSndLvlNode2))
+        val rightSubtree: Tree [L2D] = Branch(rightFstLvlNode,Branch(rightSndLvlNode1,rightSndLvlNode2))
+
 
         //Return complete tree
         Branch(rootNode,Branch(leftSubtree,rightSubtree))
