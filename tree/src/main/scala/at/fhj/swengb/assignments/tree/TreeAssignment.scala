@@ -83,58 +83,48 @@ object Graph {
     //Allow just a depth of 2 elements
     require( treeDepth <= 2)
 
-    //Create root of all evil
-    val rootNode: Tree[L2D] = Node(L2D(start,initialAngle,length,colorMap(0)))
+    /** Helper function to create Branch with given node
+      * @param node becomes root of subtree
+      * @param factor factor which the lengh is decreasing to child
+      * @param angle  Angle between child and root
+      * @param color  Color of childs
+      *
+      * @return A Subtree wich given node as root and a left & right child
+     */
+    def createSubTree(subtreeRootNode: Tree[L2D], factor: Double, angle: Double, color: Color): Branch [L2D] = {
+
+      val rootL2D: L2D = subtreeRootNode.asInstanceOf[Node[L2D]].value
+
+      //Build childes
+      val nodeLeft = Node(rootL2D.left(factor,angle,color))
+      val nodeRight = Node(rootL2D.right(factor,angle,color))
+
+      //Return created subtree
+      Branch (subtreeRootNode, Branch(nodeLeft,nodeRight))
+    }
 
     //Create Tree according depth
-    treeDepth match {
-      case 0 => rootNode
+      //Create root of all evil
+      val rootNode: Tree[L2D] = Node(L2D(start,initialAngle,length,colorMap(0)))
 
-      case 1 => {
-        //Startpoint and color for 1st level nodes
-        val rootL2D: L2D = rootNode.asInstanceOf[Node[L2D]].value
-        val fstLvlColor :Color = colorMap(0)
+      //The dark night rises...
+      treeDepth match {
+        case 0 => rootNode /*Return only the root */
+        case 1 => createSubTree(rootNode,factor,angle,colorMap(0)); /*Return tree with 1 level*/
 
-        //Create nodes on first level
-        val leftFstLvlNode: Tree [L2D] = Node(rootL2D.left(factor,angle,fstLvlColor))
-        val rightFstLvlNode: Tree [L2D] = Node(rootL2D.right(factor,angle,fstLvlColor))
+        case 2 => {
+          //Create nodes on first level
+          val rootL2D: L2D = rootNode.asInstanceOf[Node[L2D]].value
+          val leftNode: Tree [L2D] = Node(rootL2D.left(factor,angle,colorMap(0)))
+          val rightNode: Tree [L2D] = Node(rootL2D.right(factor,angle,colorMap(0)))
 
-        //Return complete tree
-        Branch(rootNode,Branch(leftFstLvlNode,rightFstLvlNode))
-      }
+          //Create subtrees
+          val leftSubtree: Branch[L2D] = createSubTree(leftNode,factor,angle,colorMap(1))
+          val rightSubtree: Branch[L2D] = createSubTree(rightNode,factor,angle,colorMap(1))
 
-      case 2 => {
-        //Startpoint and color for 1st level nodes
-        val rootL2D: L2D = rootNode.asInstanceOf[Node[L2D]].value
-        val fstLvlColor :Color = colorMap(0)
-
-        //Create nodes on first level
-        val leftFstLvlNode: Tree [L2D] = Node(rootL2D.left(factor,angle,fstLvlColor))
-        val rightFstLvlNode: Tree [L2D] = Node(rootL2D.right(factor,angle,fstLvlColor))
-
-        //Startpoint and color for 1st level nodes
-        val fstLeftL2D: L2D = leftFstLvlNode.asInstanceOf[Node[L2D]].value
-        val fstRightL2D: L2D = leftFstLvlNode.asInstanceOf[Node[L2D]].value
-        val sndLvlColor :Color = colorMap(1)
-
-        //Create nodes on snd level
-        val leftSndLvlNode1: Tree [L2D] = Node(fstLeftL2D.left(factor,angle,sndLvlColor))
-        val leftSndLvlNode2: Tree [L2D] = Node(fstLeftL2D.right(factor,angle,sndLvlColor))
-
-
-        //Irgendwo ist hier ein Zahlendreher drin. right und left sind auf jeden fall Vertauscht
-        val rightSndLvlNode1: Tree [L2D] = Node(fstRightL2D.right(factor,angle,sndLvlColor))
-        val rightSndLvlNode2: Tree [L2D] = Node(fstRightL2D.left(factor,angle,sndLvlColor))
-
-        //Build subtrees
-        val leftSubtree: Tree [L2D]  = Branch(leftFstLvlNode,Branch(leftSndLvlNode1,leftSndLvlNode2))
-        val rightSubtree: Tree [L2D] = Branch(rightFstLvlNode,Branch(rightSndLvlNode1,rightSndLvlNode2))
-
-
-        //Return complete tree
-        Branch(rootNode,Branch(leftSubtree,rightSubtree))
-      }
-
+          //Return complete tree
+          Branch(rootNode,Branch(leftSubtree,rightSubtree))
+        }
     }
 
 
