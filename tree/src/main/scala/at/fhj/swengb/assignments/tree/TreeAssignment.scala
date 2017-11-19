@@ -26,8 +26,10 @@ object Graph {
     * @return
     */
   def randomTree(root: Pt2D): Tree[L2D] =
-    mkGraph(root, Random.nextInt(360), Random.nextDouble() * 150, Random.nextInt(7))
-
+    mkGraph(root,
+            Random.nextInt(360),
+            Random.nextDouble() * 150,
+            Random.nextInt(7))
 
   /**
     * Given a Tree of L2D's and a function which can convert any L2D to a Line,
@@ -38,26 +40,20 @@ object Graph {
     * @param convert a converter function
     * @return
     */
-  def traverse[A, B](tree: Tree[A])(convert: A => B): Seq[B] =  {
-   val myList = List()
+  def traverse[A, B](tree: Tree[A])(convert: A => B): Seq[B] = {
 
-   //Helper to add all elements to list
-   def addElemToList(elem: Tree[A], list: Seq[A]): Seq[A] = {
-     elem match {
-       case  Node(x) => x :: myList
-       case Branch(left,right) =>  addElemToList(left,addElemToList(right,myList))
-     }
-   }
+    //Helper to add all elements to list
+    def addElemToList(elem: Tree[A], list: Seq[A]): Seq[A] = {
+      elem match {
+        case Node(x) => list.seq :+ x
+        case Branch(left, right) =>
+          addElemToList(left, addElemToList(right, list))
+      }
+    }
 
-   //Add all nodes to list
-   for ( c <- List(tree)) {
-     addElemToList(c,myList)
-   }
-
-    //Map operation on list and return result
-    myList.map(convert)
+    //Add all nodes to list and map operation
+    addElemToList(tree, List()).reverse.map(convert)
   }
-
 
   /**
     * Creates / constructs a tree graph.
@@ -81,56 +77,60 @@ object Graph {
               colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = {
 
     //Allow just a depth of 2 elements
-      require( treeDepth <= 2)
+    require(treeDepth <= 2)
 
     /** Helper function to create Branch with given node
-      * @param node becomes root of subtree
+      * @param subtreeRootNode becomes root of subtree
       * @param factor factor which the lengh is decreasing to child
       * @param angle  Angle between child and root
       * @param color  Color of childs
       *
       * @return A Subtree wich given node as root and a left & right child
       */
-    def createSubTree(subtreeRootNode: Tree[L2D], factor: Double, angle: Double, color: Color): Branch [L2D] = {
+    def createSubTree(subtreeRootNode: Tree[L2D],
+                      factor: Double,
+                      angle: Double,
+                      color: Color): Branch[L2D] = {
 
       val rootL2D: L2D = subtreeRootNode.asInstanceOf[Node[L2D]].value
 
       //Build childes
-      val nodeLeft = Node(rootL2D.left(factor,angle,color))
-      val nodeRight = Node(rootL2D.right(factor,angle,color))
+      val nodeLeft = Node(rootL2D.left(factor, angle, color))
+      val nodeRight = Node(rootL2D.right(factor, angle, color))
 
       //Return created subtree
-      Branch (subtreeRootNode, Branch(nodeLeft,nodeRight))
+      Branch(subtreeRootNode, Branch(nodeLeft, nodeRight))
     }
 
     //Create Tree according depth
-      //Create root of all evil
-      val rootNode: Tree[L2D] = Node(L2D(start,initialAngle,length,colorMap(0)))
+    //Create root of all evil
+    val rootNode: Tree[L2D] = Node(
+      L2D(start, initialAngle, length, colorMap(0)))
 
-      //The dark night rises...
-      treeDepth match {
-        case 0 => rootNode /*Return only the root */
-        case 1 => createSubTree(rootNode,factor,angle,colorMap(0)); /*Return tree with 1 level*/
+    //The dark night rises...
+    treeDepth match {
+      case 0 => rootNode /*Return only the root */
+      case 1 => createSubTree(rootNode, factor, angle, colorMap(0)); /*Return tree with 1 level*/
 
-        case 2 => {
-          //Create nodes on first level
-          val rootL2D: L2D = rootNode.asInstanceOf[Node[L2D]].value
-          val leftNode: Tree [L2D] = Node(rootL2D.left(factor,angle,colorMap(0)))
-          val rightNode: Tree [L2D] = Node(rootL2D.right(factor,angle,colorMap(0)))
+      case 2 => {
+        //Create nodes on first level
+        val rootL2D: L2D = rootNode.asInstanceOf[Node[L2D]].value
+        val leftNode: Tree[L2D] = Node(rootL2D.left(factor, angle, colorMap(0)))
+        val rightNode: Tree[L2D] = Node(
+          rootL2D.right(factor, angle, colorMap(0)))
 
-          //Create subtrees
-          val leftSubtree: Branch[L2D] = createSubTree(leftNode,factor,angle,colorMap(1))
-          val rightSubtree: Branch[L2D] = createSubTree(rightNode,factor,angle,colorMap(1))
+        //Create subtrees
+        val leftSubtree: Branch[L2D] =
+          createSubTree(leftNode, factor, angle, colorMap(1))
+        val rightSubtree: Branch[L2D] =
+          createSubTree(rightNode, factor, angle, colorMap(1))
 
-          //Return complete tree
-          Branch(rootNode,Branch(leftSubtree,rightSubtree))
-        }
+        //Return complete tree
+        Branch(rootNode, Branch(leftSubtree, rightSubtree))
       }
-   }
+    }
+  }
 }
-
-
-
 
 object L2D {
 
@@ -146,13 +146,15 @@ object L2D {
     * @param color the color
     * @return
     */
-  def apply(start: Pt2D, angle: AngleInDegrees, length: Double, color: Color): L2D = {
+  def apply(start: Pt2D,
+            angle: AngleInDegrees,
+            length: Double,
+            color: Color): L2D = {
     val angleInRadiants = toRadiants(angle)
     val end = Pt2D(start.x + length * Math.cos(angleInRadiants),
-      start.y + length * Math.sin(angleInRadiants)).normed
+                   start.y + length * Math.sin(angleInRadiants)).normed
     new L2D(start, end, color)
   }
-
 
 }
 
@@ -165,14 +167,14 @@ case class L2D(start: Pt2D, end: Pt2D, color: Color) {
   lazy val angle = {
     assert(!((xDist == 0) && (yDist == 0)))
     (xDist, yDist) match {
-      case (x, 0) if x > 0 => 0
-      case (0, y) if y > 0 => 90
-      case (0, y) if y < 0 => 270
-      case (x, 0) if x < 0 => 180
+      case (x, 0) if x > 0          => 0
+      case (0, y) if y > 0          => 90
+      case (0, y) if y < 0          => 270
+      case (x, 0) if x < 0          => 180
       case (x, y) if x < 0 && y < 0 => Math.atan(y / x) * 180 / Math.PI + 180
       case (x, y) if x < 0 && y > 0 => Math.atan(y / x) * 180 / Math.PI + 180
       case (x, y) if x > 0 && y < 0 => Math.atan(y / x) * 180 / Math.PI + 360
-      case (x, y) => Math.atan(y / x) * 180 / Math.PI
+      case (x, y)                   => Math.atan(y / x) * 180 / Math.PI
     }
   }
 
@@ -189,6 +191,4 @@ case class L2D(start: Pt2D, end: Pt2D, color: Color) {
     L2D(end, angle + deltaAngle, length * factor, c)
   }
 
-
 }
-
