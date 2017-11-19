@@ -81,7 +81,7 @@ object Graph {
               colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = {
 
     //Allow just a depth of 2 elements
-    require( treeDepth <= 2)
+      require( treeDepth <= 2)
 
     /** Helper function to create Branch with given node
       * @param node becomes root of subtree
@@ -90,7 +90,7 @@ object Graph {
       * @param color  Color of childs
       *
       * @return A Subtree wich given node as root and a left & right child
-     */
+      */
     def createSubTree(subtreeRootNode: Tree[L2D], factor: Double, angle: Double, color: Color): Branch [L2D] = {
 
       val rootL2D: L2D = subtreeRootNode.asInstanceOf[Node[L2D]].value
@@ -125,9 +125,7 @@ object Graph {
           //Return complete tree
           Branch(rootNode,Branch(leftSubtree,rightSubtree))
         }
-    }
-
-
+      }
    }
 }
 
