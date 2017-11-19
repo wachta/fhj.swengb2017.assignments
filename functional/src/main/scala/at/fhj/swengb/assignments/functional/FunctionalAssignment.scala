@@ -102,19 +102,7 @@ object FunctionalAssignment {
     * Implementation hint: you always have to compare two consecutive elements of the array.
     * Elements which are equal are considered to be ordered.
     */
-  def isSorted[A](as: Array[A], gt: (A, A) => Boolean): Boolean = {
-    var x = 0
-    var sorted = true
-    while(x < as.length-1){
-      sorted = gt(as(x),as(x+1))
-      if(!sorted){
-        x = as.length
-      }
-      else {x = x + 1}
-    }
-
-    return(sorted)
-  }
+  def isSorted[A](as: Array[A], gt: (A, A) => Boolean): Boolean = as.foldLeft(true)((acc,s)=> if (s!=as.last)acc && gt(s,as(as.indexOf(s)+1)) else acc)
 
   /**
     * Takes both lists and combines them, element per element.
@@ -152,7 +140,7 @@ object FunctionalAssignment {
     }
 
     def product(list: MyList[Int]): Int = list match {
-      case MyNil =>
+      case MyNil => 1
 
       case Cons(head,tail) => head * product(tail)
     }
