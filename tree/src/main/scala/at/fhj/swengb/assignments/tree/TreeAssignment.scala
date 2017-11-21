@@ -1,5 +1,6 @@
 package at.fhj.swengb.assignments.tree
 
+import java.util.Currency
 import javafx.scene.paint.Color
 
 import scala.util.Random
@@ -76,8 +77,9 @@ object Graph {
               angle: Double = 45.0,
               colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = {
 
-    //Allow just a depth of 2 elements
-    require(treeDepth <= 2)
+    //Allow just positive depth until max depth of given colors -1 to avoid IndexOutOfBound exceptions...
+    require(treeDepth >= 0 && treeDepth <= (colorMap.size -1))
+
 
     /** Helper function to create Branch with given node
       * @param subtreeRootNode becomes root of subtree
@@ -102,6 +104,44 @@ object Graph {
       Branch(subtreeRootNode, Branch(nodeLeft, nodeRight))
     }
 
+    /**
+      * Helper function to create a tree with a certain depth.
+      * @param currTree Current tree. This is the start and will increased to the given level
+      * @param depth    Start-Value of dept to start
+      * @param maxDepth Maximum depth of tree. Usually limited by amount of colors
+      * @return
+      */
+    def createTree(currTree: Tree[L2D],
+                   depth: Int,
+                   maxDepth: Int): Tree[L2D] = {
+      if (depth == maxDepth)
+        currTree /*We've read max depth of tree... We're done...*/
+      else {
+        //Still levels open to add
+        def addNewLevel(tree: Tree[L2D], currLevel: Int): Branch[L2D] = {
+          tree match {
+            case Node(root) =>
+              createSubTree(Node(root), factor, angle, colorMap(currLevel)) /*currentTree was level 0(only root) */
+            case Branch(Node(root), Branch(Node(left), Node(right))) => {
+              //We have reached the end on an branch. Create new level
+              val newTreeLeft =
+                createSubTree(Node(left), factor, angle, colorMap(currLevel))
+              val newTreeRight =
+                createSubTree(Node(right), factor, angle, colorMap(currLevel))
+              Branch(Node(root), Branch(newTreeLeft, newTreeRight))
+            }
+            case Branch(Node(root), Branch(left, right)) =>
+              /*Otherwise carry on with iteration until maxDepth is reached */
+              Branch(Node(root),
+                     Branch(addNewLevel(left, depth + 1),
+                            addNewLevel(right, depth + 1)))
+            case Branch(_, _) => ??? /*Fallback - can never happen */
+          }
+        }
+        createTree(addNewLevel(currTree, depth), (depth + 1), maxDepth)
+      }
+    }
+
     //Create Tree according depth
     //Create root of all evil
     val rootNode: Tree[L2D] = Node(
@@ -109,25 +149,8 @@ object Graph {
 
     //The dark night rises...
     treeDepth match {
-      case 0 => rootNode /*Return only the root */
-      case 1 => createSubTree(rootNode, factor, angle, colorMap(0)); /*Return tree with 1 level*/
-
-      case 2 => {
-        //Create nodes on first level
-        val rootL2D: L2D = rootNode.asInstanceOf[Node[L2D]].value
-        val leftNode: Tree[L2D] = Node(rootL2D.left(factor, angle, colorMap(0)))
-        val rightNode: Tree[L2D] = Node(
-          rootL2D.right(factor, angle, colorMap(0)))
-
-        //Create subtrees
-        val leftSubtree: Branch[L2D] =
-          createSubTree(leftNode, factor, angle, colorMap(1))
-        val rightSubtree: Branch[L2D] =
-          createSubTree(rightNode, factor, angle, colorMap(1))
-
-        //Return complete tree
-        Branch(rootNode, Branch(leftSubtree, rightSubtree))
-      }
+      case 0 => rootNode
+      case _ => createTree(rootNode, 0, treeDepth)
     }
   }
 }
