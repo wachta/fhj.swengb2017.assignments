@@ -39,7 +39,18 @@ object Graph {
     * @param convert a converter function
     * @return
     */
-  def traverse[A, B](tree: Tree[A])(convert: A => B): Seq[B] =  ???
+  def traverse[A, B](tree: Tree[A])(convert: A => B): Seq[B] = {
+
+    def add(tree: Tree[A], list: Seq[A]): Seq[A] = tree match {
+
+      case n:Node[A] => list :+ n.value
+      case b:Branch[A] => add(b.left, add(b.right, list))
+
+    }
+
+    add(tree, List()).reverse.map(convert)
+    
+  }
 
 
   /**
