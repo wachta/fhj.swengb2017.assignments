@@ -111,28 +111,44 @@ object Graph {
                    depth: Int,
                    maxDepth: Int): Tree[L2D] = {
       if (depth == maxDepth)
-        currTree /*We've read max depth of tree... We're done...*/
+        /*We've reached requested depth of tree, we're done*/
+        currTree
       else {
-        //Still levels open to add
+        /*Still levels to add...*/
+
+        /** Subhelper to add a new level to given tree if iteration requires.
+          * According to the given tree, heler has to deal with it:
+          * A tree can look like:
+          *   Node(x) => Its a level 0 tree(just root). Create a subtree out of it. (create Level 1)
+          *   Branch(Node,Branch(Node,Node) => It is a leaf. In this case a new level needs to added
+          *   Branch(Node(Branch(Branch,Branch) => Somewhere in the middle of the tree. Just iterate further
+          * @param tree - Tree to verify and add new level is possible in this iteration
+          * @param currLevel - current level of iteration. Defines color for new possible created level
+          * @return Tree with new level if neccessary in given iteration.
+          */
         def addNewLevel(tree: Tree[L2D], currLevel: Int): Branch[L2D] = {
           tree match {
             case Node(root) =>
-              createSubTree(Node(root), factor, angle, colorMap(currLevel)) /*currentTree was level 0(only root) */
+              /*Given tree was only a node(root), create a Branch out of it (Level 1) */
+              createSubTree(Node(root), factor, angle, colorMap(currLevel))
             case Branch(Node(root), Branch(Node(left), Node(right))) =>
-              //We have reached the end on an branch. Create new level
+              /*Given tree is a leaf. Append new level */
               val newSubtreeLeft =
                 createSubTree(Node(left), factor, angle, colorMap(currLevel))
               val newSubtreeRight =
                 createSubTree(Node(right), factor, angle, colorMap(currLevel))
               Branch(Node(root), Branch(newSubtreeLeft, newSubtreeRight))
             case Branch(Node(root), Branch(left, right)) =>
-              /*Otherwise carry on with iteration until maxDepth is reached */
+              /*Given tree is a subtree in the middle of the tree.
+                Go further(deeper) in the tree on the left and right side and increase level*/
               Branch(Node(root),
                      Branch(addNewLevel(left, depth + 1),
                             addNewLevel(right, depth + 1)))
-            case Branch(_, _) => ??? /*Fallback - can never happen */
+            case Branch(_, _) => ??? /*Fallback - If this happens, some crazy shit is going on...*/
           }
         }
+
+        //Recursive call but with newly created tree from helper function.
         createTree(addNewLevel(currTree, depth), depth + 1, maxDepth)
       }
     }
