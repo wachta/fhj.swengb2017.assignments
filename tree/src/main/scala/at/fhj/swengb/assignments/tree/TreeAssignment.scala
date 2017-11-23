@@ -23,7 +23,7 @@ object Graph {
   /**
     * creates a random tree
     *
-    * @param root
+    * @param root - Startpoint of graph
     * @return
     */
   def randomTree(root: Pt2D): Tree[L2D] =
@@ -78,30 +78,26 @@ object Graph {
               colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = {
 
     //Allow just positive depth until max depth of given colors -1 to avoid IndexOutOfBound exceptions...
-    require(treeDepth >= 0 && treeDepth <= (colorMap.size -1))
-
+    require(treeDepth >= 0 && treeDepth <= (colorMap.size - 1))
 
     /** Helper function to create Branch with given node
-      * @param subtreeRootNode becomes root of subtree
+      * @param leaf   currently a leaf but becomes root of created subtree
       * @param factor factor which the lengh is decreasing to child
       * @param angle  Angle between child and root
       * @param color  Color of childs
       *
       * @return A Subtree wich given node as root and a left & right child
       */
-    def createSubTree(subtreeRootNode: Tree[L2D],
+    def createSubTree(leaf: Node[L2D],
                       factor: Double,
                       angle: Double,
                       color: Color): Branch[L2D] = {
-
-      val rootL2D: L2D = subtreeRootNode.asInstanceOf[Node[L2D]].value
-
-      //Build childes
-      val nodeLeft = Node(rootL2D.left(factor, angle, color))
-      val nodeRight = Node(rootL2D.right(factor, angle, color))
+      //Create new childs for given leaf
+      val nodeLeft = Node(leaf.value.left(factor, angle, color))
+      val nodeRight = Node(leaf.value.right(factor, angle, color))
 
       //Return created subtree
-      Branch(subtreeRootNode, Branch(nodeLeft, nodeRight))
+      Branch(leaf, Branch(nodeLeft, nodeRight))
     }
 
     /**
@@ -122,14 +118,13 @@ object Graph {
           tree match {
             case Node(root) =>
               createSubTree(Node(root), factor, angle, colorMap(currLevel)) /*currentTree was level 0(only root) */
-            case Branch(Node(root), Branch(Node(left), Node(right))) => {
+            case Branch(Node(root), Branch(Node(left), Node(right))) =>
               //We have reached the end on an branch. Create new level
-              val newTreeLeft =
+              val newSubtreeLeft =
                 createSubTree(Node(left), factor, angle, colorMap(currLevel))
-              val newTreeRight =
+              val newSubtreeRight =
                 createSubTree(Node(right), factor, angle, colorMap(currLevel))
-              Branch(Node(root), Branch(newTreeLeft, newTreeRight))
-            }
+              Branch(Node(root), Branch(newSubtreeLeft, newSubtreeRight))
             case Branch(Node(root), Branch(left, right)) =>
               /*Otherwise carry on with iteration until maxDepth is reached */
               Branch(Node(root),
@@ -138,16 +133,16 @@ object Graph {
             case Branch(_, _) => ??? /*Fallback - can never happen */
           }
         }
-        createTree(addNewLevel(currTree, depth), (depth + 1), maxDepth)
+        createTree(addNewLevel(currTree, depth), depth + 1, maxDepth)
       }
     }
 
     //Create Tree according depth
-    //Create root of all evil
+    //Create initial root node
     val rootNode: Tree[L2D] = Node(
       L2D(start, initialAngle, length, colorMap(0)))
 
-    //The dark night rises...
+    //Append tree according given depth
     treeDepth match {
       case 0 => rootNode
       case _ => createTree(rootNode, 0, treeDepth)
