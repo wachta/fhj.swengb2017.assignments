@@ -35,7 +35,7 @@ object Graph {
     * you have to traverse the tree (visit all nodes) and create a sequence
     * of Line's. The ordering of the lines is not important.
     *
-    * @param tree  a tree which contains L2D instances
+    * @param tree    a tree which contains L2D instances
     * @param convert a converter function
     * @return
     */
@@ -43,27 +43,26 @@ object Graph {
 
     def add(tree: Tree[A], list: Seq[A]): Seq[A] = tree match {
 
-      case n:Node[A] => list :+ n.value
-      case b:Branch[A] => add(b.left, add(b.right, list))
+      case n: Node[A] => list :+ n.value
+      case b: Branch[A] => add(b.left, add(b.right, list))
 
     }
 
     add(tree, List()).reverse.map(convert)
-    
+
   }
 
 
   /**
     * Creates / constructs a tree graph.
     *
-    * @param start the startpoint (root) of the tree
+    * @param start        the startpoint (root) of the tree
     * @param initialAngle initial angle of the tree
-    * @param length the initial length of the tree
-    * @param treeDepth the depth of the tree
-    * @param factor the factor which the length is decreasing for every iteration
-    * @param angle the angle between a branch and the root
-    * @param colorMap color map, by default it is the colormap given in the companion object Graph
-    *
+    * @param length       the initial length of the tree
+    * @param treeDepth    the depth of the tree
+    * @param factor       the factor which the length is decreasing for every iteration
+    * @param angle        the angle between a branch and the root
+    * @param colorMap     color map, by default it is the colormap given in the companion object Graph
     * @return a Tree[L2D] which can be traversed by other algorithms
     */
   def mkGraph(start: Pt2D,
@@ -72,11 +71,15 @@ object Graph {
               treeDepth: Int,
               factor: Double = 0.75,
               angle: Double = 45.0,
-              colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = ???
+              colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = {
+
+
+    require(treeDepth <= 16, message = "depth is too high")
+    Node(L2D(start, initialAngle, length, colorMap(0)))
+
+  }
 
 }
-
-
 
 
 object L2D {
