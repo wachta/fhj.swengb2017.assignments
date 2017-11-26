@@ -44,7 +44,7 @@ object Graph {
     def add(tree: Tree[A], list: Seq[A]): Seq[A] = tree match {
 
       case n: Node[A] => list :+ n.value
-      case b: Branch[A] => add(b.left, add(b.right, list))
+      case b: Branch[A] => add(b.right, add(b.left, list))
 
     }
 
