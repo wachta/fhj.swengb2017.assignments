@@ -71,56 +71,27 @@ object Graph {
               angle: Double = 45.0,
               colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = {
 
-    require(treeDepth <= 16 && treeDepth >= 0)
+    require(treeDepth <= colorMap.size - 1)
 
-    def createSubTree(leaf: Node[L2D],
-                      factor: Double,
-                      angle: Double,
-                      color: Color): Branch[L2D] = {
-      val nodeLeft = Node(leaf.value.left(factor, angle, color))
-      val nodeRight = Node(leaf.value.right(factor, angle, color))
-
-      Branch(leaf, Branch(nodeLeft, nodeRight))
+    if (treeDepth == 0) {
+      Node(L2D(start, initialAngle, length, colorMap(0)))
     }
 
-    def createTree(currTree: Tree[L2D],
-                   depth: Int,
-                   maxDepth: Int): Tree[L2D] = {
-      if (depth == maxDepth)
-        currTree
-      else {
-
-        def addNewLevel(tree: Tree[L2D], currLevel: Int): Branch[L2D] = {
-          tree match {
-            case Node(root) =>
-              createSubTree(Node(root), factor, angle, colorMap(currLevel))
-            case Branch(Node(root), Branch(Node(left), Node(right))) =>
-              val newSubtreeLeft =
-                createSubTree(Node(left), factor, angle, colorMap(currLevel))
-              val newSubtreeRight =
-                createSubTree(Node(right), factor, angle, colorMap(currLevel))
-              Branch(Node(root), Branch(newSubtreeLeft, newSubtreeRight))
-            case Branch(Node(root), Branch(left, right)) =>
-              Branch(Node(root),
-                Branch(addNewLevel(left, depth + 1),
-                  addNewLevel(right, depth + 1)))
-          }
+    else {
+      def makeIt(node: L2D, depth: Int): Tree[L2D] = {
+        if (treeDepth == depth) {
+          Branch(Node(node), Branch(Node(node.left(factor, angle, colorMap(depth - 1))), Node(node.right(factor, angle, colorMap(depth - 1)))))
         }
-
-        createTree(addNewLevel(currTree, depth), depth + 1, maxDepth)
+        else {
+          Branch(Node(node), Branch(makeIt(node.left(factor, angle, colorMap(depth - 1)), depth + 1), makeIt(node.right(factor, angle, colorMap(depth - 1)), depth + 1)))
+        }
       }
-    }
 
-    val rootNode: Tree[L2D] = Node(
-      L2D(start, initialAngle, length, colorMap(0)))
-
-    treeDepth match {
-      case 0 => rootNode
-      case _ => createTree(rootNode, 0, treeDepth)
+      makeIt(L2D(start, initialAngle, length, colorMap(0)), 1)
     }
   }
-}
 
+}
 
 object L2D {
 
