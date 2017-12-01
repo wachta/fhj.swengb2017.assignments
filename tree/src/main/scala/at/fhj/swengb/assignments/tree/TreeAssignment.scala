@@ -35,24 +35,32 @@ object Graph {
     * you have to traverse the tree (visit all nodes) and create a sequence
     * of Line's. The ordering of the lines is not important.
     *
-    * @param tree  a tree which contains L2D instances
+    * @param tree    a tree which contains L2D instances
     * @param convert a converter function
     * @return
     */
-  def traverse[A, B](tree: Tree[A])(convert: A => B): Seq[B] =  ???
+  def traverse[A, B](tree: Tree[A])(convert: A => B): Seq[B] = {
+    def tree2list(tree: Tree[A], list: Seq[A]): Seq[A] =
+      tree match {
+
+        case Node(n) => list :+ n
+        case Branch(left, right) => tree2list(left, tree2list(right, list))
+      }
+
+    tree2list(tree, Seq()).reverse.map(convert)
+  }
 
 
   /**
     * Creates / constructs a tree graph.
     *
-    * @param start the startpoint (root) of the tree
+    * @param start        the startpoint (root) of the tree
     * @param initialAngle initial angle of the tree
-    * @param length the initial length of the tree
-    * @param treeDepth the depth of the tree
-    * @param factor the factor which the length is decreasing for every iteration
-    * @param angle the angle between a branch and the root
-    * @param colorMap color map, by default it is the colormap given in the companion object Graph
-    *
+    * @param length       the initial length of the tree
+    * @param treeDepth    the depth of the tree
+    * @param factor       the factor which the length is decreasing for every iteration
+    * @param angle        the angle between a branch and the root
+    * @param colorMap     color map, by default it is the colormap given in the companion object Graph
     * @return a Tree[L2D] which can be traversed by other algorithms
     */
   def mkGraph(start: Pt2D,
@@ -61,12 +69,28 @@ object Graph {
               treeDepth: Int,
               factor: Double = 0.75,
               angle: Double = 45.0,
-              colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = ???
+              colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = {
+
+    require(treeDepth <= colorMap.size - 1)
+
+      if (treeDepth == 0) {
+        Node(L2D(start, initialAngle, length, colorMap(0)))
+      }
+      else {
+        def makeIt(node: L2D, depth: Int): Tree[L2D] = {
+          if (treeDepth == depth) {
+            Branch(Node(node), Branch(Node(node.left(factor, angle, colorMap(depth - 1))), Node(node.right(factor, angle, colorMap(depth - 1)))))
+          }
+          else {
+            Branch(Node(node), Branch(makeIt(node.left(factor, angle, colorMap(depth - 1)), depth + 1), makeIt(node.right(factor, angle, colorMap(depth - 1)), depth + 1)))
+          }
+        }
+
+        makeIt(L2D(start, initialAngle, length, colorMap(0)), 1)
+      }
+  }
 
 }
-
-
-
 
 object L2D {
 
@@ -76,10 +100,10 @@ object L2D {
     * Given a startpoint, an angle and a length the endpoint of the line
     * is calculated and finally a L2D class is returned.
     *
-    * @param start the startpoint
-    * @param angle the angle
+    * @param start  the startpoint
+    * @param angle  the angle
     * @param length the length of the line
-    * @param color the color
+    * @param color  the color
     * @return
     */
   def apply(start: Pt2D, angle: AngleInDegrees, length: Double, color: Color): L2D = {
