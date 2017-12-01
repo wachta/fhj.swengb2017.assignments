@@ -73,22 +73,21 @@ object Graph {
 
     require(treeDepth <= colorMap.size - 1)
 
-    if (treeDepth == 0) {
-      Node(L2D(start, initialAngle, length, colorMap(0)))
-    }
-
-    else {
-      def makeIt(node: L2D, depth: Int): Tree[L2D] = {
-        if (treeDepth == depth) {
-          Branch(Node(node), Branch(Node(node.left(factor, angle, colorMap(depth - 1))), Node(node.right(factor, angle, colorMap(depth - 1)))))
-        }
-        else {
-          Branch(Node(node), Branch(makeIt(node.left(factor, angle, colorMap(depth - 1)), depth + 1), makeIt(node.right(factor, angle, colorMap(depth - 1)), depth + 1)))
-        }
+      if (treeDepth == 0) {
+        Node(L2D(start, initialAngle, length, colorMap(0)))
       }
+      else {
+        def makeIt(node: L2D, depth: Int): Tree[L2D] = {
+          if (treeDepth == depth) {
+            Branch(Node(node), Branch(Node(node.left(factor, angle, colorMap(depth - 1))), Node(node.right(factor, angle, colorMap(depth - 1)))))
+          }
+          else {
+            Branch(Node(node), Branch(makeIt(node.left(factor, angle, colorMap(depth - 1)), depth + 1), makeIt(node.right(factor, angle, colorMap(depth - 1)), depth + 1)))
+          }
+        }
 
-      makeIt(L2D(start, initialAngle, length, colorMap(0)), 1)
-    }
+        makeIt(L2D(start, initialAngle, length, colorMap(0)), 1)
+      }
   }
 
 }
