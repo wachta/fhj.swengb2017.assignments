@@ -9,37 +9,25 @@ object FunctionalAssignment {
   /**
     * A function which returns its parameters in a changed order. Look at the type signature.
     */
-  def flip[A, B](t: (A, B)): (B, A) = {
-
-    (t._2, t._1)
-
-  }
-
+  def flip[A, B](t: (A, B)): (B, A) = return((t._2,t._1))
 
   /**
     * given a Seq[A] and a function f : A => B, return a Seq[B]
     */
   def unknown[A, B](as: Seq[A], fn: A => B): Seq[B] = {
-
-    as.map(fn)
-
+    var ls = Seq[B]()
+    for (i <- 0 to (as.length - 1)) {
+      ls = ls ++ Seq[B](fn(as(i)))
+    }
+    return(ls)
   }
-
-
   /**
     * Returns the absolute value of the parameter i.
     *
     * @param i a value, either with a positive or a negative sign.
     * @return
     */
-  def abs(i: Int): Int = {
-
-    //i.abs
-    if (i < 0)
-      i * -1
-    else i
-
-  }
+  def abs(i: Int): Int = if (i < 0){ return(i*(-1))} else{return(i)}
 
 
   // Describe with your own words what this function does.
@@ -51,15 +39,14 @@ object FunctionalAssignment {
   //
   /**
     *
-    * @param as
-    * @param b
-    * @param fn
-    * @tparam A
-    * @tparam B
-    * @return
+    * @param as = Liste von Elementen
+    * @param b = Startwert von foldleft
+    * @param fn = Funktion die 2 Parameter nimmt und folgendermaßen angewandt wird: first = fn(b,as(0)) dann second = fn(first,as(1)) ... solange bis man das Ende der Seq erreicht hat
+    * @tparam A = Class A
+    * @tparam B = Class B
+    * @return = liefert einen Wert zurück
     */
   def op[A, B](as: Seq[A], b: B)(fn: (B, A) => B): B = as.foldLeft(b)(fn)
-
 
   /**
     * implement the summation of the given numbers parameter.
@@ -68,12 +55,8 @@ object FunctionalAssignment {
     * @param numbers
     * @return
     */
-  def sum(numbers: Seq[Int]): Int = {
+  def sum(numbers: Seq[Int]): Int = op(numbers,0)(_+_)
 
-    numbers.foldLeft(0)(_ + _) //numbers.sum
-    //op(numbers,0)(_+_)
-
-  }
 
   /**
     * calculate the factorial number of the given parameter.
@@ -86,12 +69,15 @@ object FunctionalAssignment {
     * @return i!
     */
   def fact(i: Int): Int = {
-
-    if (i == 0) 1
-    else i * fact(i - 1)
-
+    if(i>0) {
+      var fract = i
+      for (x <- 1 to (i - 1)) {
+        fract = fract * x
+      }
+      return(fract)
+    }
+    else return(0)
   }
-
 
   /**
     * compute the n'th fibonacci number
@@ -101,16 +87,13 @@ object FunctionalAssignment {
     *
     * https://en.wikipedia.org/wiki/Fibonacci_number
     */
-
   def fib(n: Int): Int = {
-    def fib_tail(n: Int, a: Int, b: Int): Int = n match {
-      case 0 => a
-      case _ => fib_tail(n - 1, b, a + b)
+    if (n == 0) return(0)
+    else {
+      if (n == 1) return (1)
+      else return (fib(n - 1) + fib(n - 2))
     }
-
-    return fib_tail(n, 0, 1)
   }
-
 
   /**
     * Implement a isSorted which checks whether an Array[A] is sorted according to a
@@ -119,16 +102,7 @@ object FunctionalAssignment {
     * Implementation hint: you always have to compare two consecutive elements of the array.
     * Elements which are equal are considered to be ordered.
     */
-
-  def isSorted[A](as: Array[A], gt: (A, A) => Boolean): Boolean = {
-    def go(n: Int): Boolean =
-      if (n <= as.length - 1) true
-      else if (gt(as(n), as(n + 1))) false
-      else go(n + 1)
-
-    go(0)
-  }
-
+  def isSorted[A](as: Array[A], gt: (A, A) => Boolean): Boolean = as.foldLeft(true)((acc,s)=> if (s!=as.last)acc && gt(s,as(as.indexOf(s)+1)) else acc)
 
   /**
     * Takes both lists and combines them, element per element.
@@ -137,11 +111,14 @@ object FunctionalAssignment {
     * of the shorter sequence.
     */
   def genPairs[A, B](as: Seq[A], bs: Seq[B]): Seq[(A, B)] = {
-
-    as.zip(bs)
-
+    var x = 1
+    var pairs = Seq((as(0),bs(0)))
+    while(x<=as.length-1 && x<=bs.length-1){
+      pairs = pairs ++ Seq((as(x),bs(x)))
+      x = x + 1
+    }
+    return(pairs)
   }
-
 
   // a simple definition of a linked list, we define our own list data structure
   sealed trait MyList[+A]
@@ -154,18 +131,19 @@ object FunctionalAssignment {
   // it also provides a convenience constructor in order to instantiate a MyList without hassle
   object MyList {
 
-
     def sum(list: MyList[Int]): Int = list match {
       case MyNil => 0
-      case Cons(head, tail) => head + sum(tail)
+
+      case Cons(head,tail) => head + sum(tail)
+
+
     }
 
     def product(list: MyList[Int]): Int = list match {
       case MyNil => 1
-      case Cons(0,_) => 0
+
       case Cons(head,tail) => head * product(tail)
     }
-    
 
     def apply[A](as: A*): MyList[A] = {
       if (as.isEmpty) MyNil
@@ -173,4 +151,6 @@ object FunctionalAssignment {
     }
 
   }
+
 }
+
