@@ -35,24 +35,34 @@ object Graph {
     * you have to traverse the tree (visit all nodes) and create a sequence
     * of Line's. The ordering of the lines is not important.
     *
-    * @param tree  a tree which contains L2D instances
+    * @param tree    a tree which contains L2D instances
     * @param convert a converter function
     * @return
     */
-  def traverse[A, B](tree: Tree[A])(convert: A => B): Seq[B] =  ???
+  def traverse[A, B](tree: Tree[A])(convert: A => B): Seq[B] = {
+
+    def add(tree: Tree[A], list: Seq[A]): Seq[A] = tree match {
+
+      case n: Node[A] => list :+ n.value
+      case b: Branch[A] => add(b.left, add(b.right, list))
+
+    }
+
+    add(tree, List()).reverse.map(convert)
+
+  }
 
 
   /**
     * Creates / constructs a tree graph.
     *
-    * @param start the startpoint (root) of the tree
+    * @param start        the startpoint (root) of the tree
     * @param initialAngle initial angle of the tree
-    * @param length the initial length of the tree
-    * @param treeDepth the depth of the tree
-    * @param factor the factor which the length is decreasing for every iteration
-    * @param angle the angle between a branch and the root
-    * @param colorMap color map, by default it is the colormap given in the companion object Graph
-    *
+    * @param length       the initial length of the tree
+    * @param treeDepth    the depth of the tree
+    * @param factor       the factor which the length is decreasing for every iteration
+    * @param angle        the angle between a branch and the root
+    * @param colorMap     color map, by default it is the colormap given in the companion object Graph
     * @return a Tree[L2D] which can be traversed by other algorithms
     */
   def mkGraph(start: Pt2D,
@@ -61,9 +71,44 @@ object Graph {
               treeDepth: Int,
               factor: Double = 0.75,
               angle: Double = 45.0,
-              colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = ???
+              colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = {
+
+    require(treeDepth <= 16, message = "Depth is too high.")
+    val rootNode = Node(L2D(start, initialAngle, length, colorMap(0)))
+
+    def createSubTree(leaf: Node[L2D], factor: Double, angle: Double, color: Color): Branch[L2D] = {
+      val nodeLeft = Node(leaf.value.left(factor, angle, color))
+      val nodeRight = Node(leaf.value.right(factor, angle, color))
+
+      Branch(leaf, Branch(nodeLeft, nodeRight))
+    }
+
+    def createTree(tree: Tree[L2D], depth: Int, maxDepth: Int): Tree[L2D] = {
+      def nextLevel(subTree: Tree[L2D], level: Int): Branch[L2D] = {
+
+        subTree match {
+          case Node(root) => createSubTree(Node(root), factor, angle, colorMap(0))
+          case Branch(Node(root), Branch(Node(left), Node(right))) =>
+            val createSubtreeLeft = createSubTree(Node(left), factor, angle, colorMap(1))
+
+            val createSubtreeRight = createSubTree(Node(right), factor, angle, colorMap(1))
+            Branch(Node(root), Branch(createSubtreeLeft, createSubtreeRight))
+
+          case Branch(Node(root), Branch(left, right)) =>
+            Branch(Node(root), Branch(nextLevel(left, depth + 1), nextLevel(right, depth + 1)))
+        }
+      }
+      if(depth == maxDepth)
+        tree
+      else
+        createTree(nextLevel(tree, depth), depth+1, maxDepth)
+    }
+    createTree(rootNode, 0, treeDepth)
+  }
 
 }
+
+
 
 
 
