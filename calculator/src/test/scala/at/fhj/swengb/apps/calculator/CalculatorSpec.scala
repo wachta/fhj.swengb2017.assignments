@@ -1,6 +1,8 @@
 package at.fhj.swengb.apps.calculator
 
-class CalculatorSpec {
+import org.scalatest.WordSpecLike
+
+class CalculatorSpec extends  WordSpecLike{
 
 
   // pending specs ...

@@ -7,16 +7,16 @@
 | Hours
 | Description
 
-| 29.11.17
-| 1
-| Review of this and that
-
-| 30.11.17
+| 9.12.17
 | 5
-| implemented css
+| Learning to build the GUI and starting to write functions
 
-| 11.07.17
-| 2
-| fixed bugs
+| 10.12.17
+| 7
+| Going through Specs
+
+| 11.12.17
+| 5
+| Finalizing Spec and fixing bugs
 
 |===
